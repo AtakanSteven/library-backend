@@ -1,2 +1,2 @@
 # library-backend
-an online library system for anyon e
+an online library system for anyone
