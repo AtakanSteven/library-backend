@@ -2,7 +2,7 @@ import { Body, Controller, HttpStatus, Post, Res, Get } from "@nestjs/common";
 import {BookService} from "./book.service";
 import {CreateBookDto} from "./dto/create.book.dto";
 
-@Controller('book')
+@Controller('books')
 export class BookController {
     constructor(private readonly BookService: BookService){}
 
@@ -13,11 +13,12 @@ export class BookController {
             newBook
         })
     }
-    @Get()
-    async getMyBooks(@Res() response, @Body() body) {
-        const myBooks = await this.BookService.getMyBooks(body.bookId);
+
+    @Post('/favourite')
+    async favouriteBook(@Res() response, @Body() body) {
+        const newBook = await this.BookService.favouriteBook(body.myId, body.bookId);
         return response.status(HttpStatus.CREATED).json({
-            myBooks
+            newBook
         })
     }
 
