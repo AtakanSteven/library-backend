@@ -14,6 +14,12 @@ export class BookService {
         private readonly profileModel: Model<ProfileDocument>,
         ) {}
 
+    /**
+     * Creates books for current user.
+     *
+     * @param profileId
+     * @param createBookDto
+     */
     async create(profileId, createBookDto: CreateBookDto) {
         const objProfileId = new Types.ObjectId(profileId)
         return await new this.bookModel({
@@ -23,14 +29,14 @@ export class BookService {
         }).save()
     }
 
-
-
     /**
      * Adds other users books to users favourites.
      *
      * Users can favorite the other users books’ but not their own books.
      *
      * Users can not favorite the same book twice.
+     *
+     * Users only can add upto 10 books to their favourites.
      *
      * @param myId
      * @param bookId
@@ -42,16 +48,50 @@ export class BookService {
         if (myBook == 0) {
             const duplicatedLike = await this.profileModel.exists({ favourites: { "$in": bookId } })
             if (!duplicatedLike){
-                return this.profileModel.updateOne({ _id: myId }, { $push: { favourites: bookId } });
+                return this.profileModel.updateOne({ _id: myId, "favourites.9" : { "$exists" : false } }, { $push: { favourites: bookId } });
             }
             throw new BadRequestException("YOU ALREADY ADDED THIS BOOK TO YOUR FAVOURITES")
         }
         throw new BadRequestException("YOU CANNOT ADD YOUR OWN BOOK TO YOUR FAVOURITES")
 
     }
+    /**
+     * List all the books of a user.
+     *
+     * Populate creator who is the user.
+     *
+     * @param creator
+     */
+    async getOtherBooks(creator) {
+        const objCreatorId = new Types.ObjectId(creator)
+        const populate = {
+            path: "creator",
+            select: 'username'
+        };
+        return await this.bookModel.find({ creator: objCreatorId }).populate(populate).lean().exec()
+    }
+
 
     /**
-     * Gets the users selected book.
+     * Gets the users own favourite book list.
+     *
+     * Nested populate is used to get creators username.
+     *
+     * @param myId
+     */
+    async getFavourites(myId) {
+        const populate = {
+            path: 'favourites',
+            populate: {
+                path: 'creator',
+                select: 'username'
+            }
+        }
+        return await this.profileModel.findOne({ _id: myId }).populate(populate).exec();
+    }
+
+    /**
+     * Gets the users book to see if its existing or not.
      *
      * @param _id
      * @param creatorId

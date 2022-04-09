@@ -22,4 +22,19 @@ export class BookController {
         })
     }
 
+    @Get()
+    async otherBooks(@Res() response, @Body() body) {
+        const myBooks = await this.BookService.getOtherBooks(body.creator);
+        return response.status(HttpStatus.CREATED).json({
+            myBooks
+        })
+    }
+    @Get('/favourites')
+    async favourites(@Res() response, @Body() body) {
+        const myFavourites = await this.BookService.getFavourites(body._id);
+        return response.status(HttpStatus.CREATED).json({
+            myFavourites
+        })
+    }
+
 }
