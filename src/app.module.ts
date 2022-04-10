@@ -5,6 +5,7 @@ import { ConfigModule } from "@nestjs/config";
 import getDatabaseUrl from "./config/database.url";
 import {EmailModule} from "./mail/email.module";
 import {BookModule} from "./book/book.module";
+import {AuthModule} from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import {BookModule} from "./book/book.module";
       MongooseModule.forRoot(getDatabaseUrl()),
       ProfileModule,
       EmailModule,
-      BookModule
+      BookModule,
+      AuthModule
   ],
   controllers: [],
   providers: [],
