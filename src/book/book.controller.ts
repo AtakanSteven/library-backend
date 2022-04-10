@@ -1,4 +1,4 @@
-import {Body, Controller, HttpStatus, Post, Res, Get, UseGuards, Request} from "@nestjs/common";
+import {Body, Controller, HttpStatus, Post, Res, Get, UseGuards, Request, Param} from "@nestjs/common";
 import {BookService} from "./book.service";
 import {CreateBookDto} from "./dto/create.book.dto";
 import {AuthGuard} from "@nestjs/passport";
@@ -36,11 +36,9 @@ export class BookController {
         })
     }
 
-    @UseGuards(AuthGuard('jwt'))
-    @Get('/favourites')
-    async favourites(@Request() req, @Res() response) {
-        const user = req.user._id
-        const myFavourites = await this.BookService.getFavourites(user);
+    @Get('/favourites/:id')
+    async favourites(@Res() response, @Param() param ) {
+        const myFavourites = await this.BookService.getFavourites(param.id);
         return response.status(HttpStatus.CREATED).json({
             myFavourites
         })

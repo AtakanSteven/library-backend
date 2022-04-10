@@ -80,7 +80,7 @@ export class BookService {
      *
      * @param myId
      */
-    async getFavourites(myId) {
+    async getFavourites(otherProfileId) {
         const populate = {
             path: 'favourites',
             populate: {
@@ -88,7 +88,7 @@ export class BookService {
                 select: 'username'
             }
         }
-        return await this.profileModel.findOne({ _id: myId, "favourites.0" : { "$exists" : true } }).populate(populate).exec();
+        return await this.profileModel.findOne({ _id: otherProfileId, "favourites.0" : { "$exists" : true } }).populate(populate).exec();
     }
 
     /**
