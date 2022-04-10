@@ -41,7 +41,6 @@ export class BookService {
      * @param myId
      * @param bookId
      */
-    // @todo add is book exists
     async favouriteBook(myId, bookId) {
         const myBook = await this.getMyBook(bookId, myId)
 
@@ -77,6 +76,8 @@ export class BookService {
      *
      * Nested populate is used to get creators username.
      *
+     * If the user doesn't have any books in their favourites array, return null.
+     *
      * @param myId
      */
     async getFavourites(myId) {
@@ -87,7 +88,7 @@ export class BookService {
                 select: 'username'
             }
         }
-        return await this.profileModel.findOne({ _id: myId }).populate(populate).exec();
+        return await this.profileModel.findOne({ _id: myId, "favourites.0" : { "$exists" : true } }).populate(populate).exec();
     }
 
     /**
